@@ -1,0 +1,78 @@
+﻿@page
+@model FileStorageTestModel
+@{
+    ViewData["Title"] = "MinIO File Storage Test";
+}
+
+<div class="container mt-4">
+    <h1>MinIO File Storage Test</h1>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h3>Upload File</h3>
+        </div>
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data" asp-page-handler="Upload">
+                <div class="mb-3">
+                    <label for="Upload" class="form-label">Select File</label>
+                    <input type="file" class="form-control" asp-for="Upload" />
+                    <span asp-validation-for="Upload" class="text-danger"></span>
+                </div>
+                <button type="submit" class="btn btn-primary">Upload</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h3>Stored Files</h3>
+        </div>
+        <div class="card-body">
+            @if (Model.Files.Any())
+            {
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>File Name</th>
+                            <th>Size</th>
+                            <th>Last Modified</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var file in Model.Files)
+                        {
+                            <tr>
+                                <td>@file.Name</td>
+                                <td>@FormatFileSize(file.Size)</td>
+                                <td>@file.LastModified.ToString("yyyy-MM-dd HH:mm")</td>
+                                <td>
+                                    <a asp-page-handler="Download" asp-route-fileName="@file.Name" class="btn btn-sm btn-success">Download</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <p class="text-muted">No files uploaded yet.</p>
+            }
+        </div>
+    </div>
+</div>
+
+@functions {
+    private string FormatFileSize(long bytes)
+    {
+        string[] sizes = { "B", "KB", "MB", "GB" };
+        double len = bytes;
+        int order = 0;
+        while (len >= 1024 && order < sizes.Length - 1)
+        {
+            order++;
+            len = len / 1024;
+        }
+        return $"{len:0.##} {sizes[order]}";
+    }
+}
