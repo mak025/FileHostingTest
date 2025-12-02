@@ -1,0 +1,49 @@
+@model FileHostingTest.Pages.FileStorageTestModel
+
+<div class="modal fade" id="shareModal" tabindex="-1" aria-labelledby="shareModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="shareModalLabel">Share</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="shareInfo">
+            <p id="shareDescription">Use the link below to share this file. By default the link will be valid for a short time.</p>
+
+            <div class="form-check mb-2">
+              <input class="form-check-input" type="checkbox" value="" id="shareAdvanced">
+              <label class="form-check-label" for="shareAdvanced">
+                Advanced options
+              </label>
+            </div>
+
+            <div id="advancedOptions" style="display:none;">
+                <div class="row g-2">
+                    <div class="col-auto">
+                        <input type="number" min="0" value="0" id="shareDays" class="form-control form-control-sm" />
+                        <div class="form-text">Days</div>
+                    </div>
+                    <div class="col-auto">
+                        <input type="number" min="0" value="12" id="shareHours" class="form-control form-control-sm" />
+                        <div class="form-text">Hours</div>
+                    </div>
+                    <div class="col-auto">
+                        <input type="number" min="0" value="0" id="shareMinutes" class="form-control form-control-sm" />
+                        <div class="form-text">Minutes</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-3">
+                <input type="text" readonly class="form-control" id="shareLink" />
+            </div>
+
+            <div class="mt-3 text-end">
+                <button class="btn btn-primary" id="generateShareLink">Generate link</button>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

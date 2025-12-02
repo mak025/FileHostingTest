@@ -1,0 +1,273 @@
+﻿/* Google Drive-inspired styling */
+:root {
+    --gd-blue: #1a73e8;
+    --gd-blue-hover: #1765cc;
+    --gd-border: #dadce0;
+    --gd-bg: #f8f9fa;
+    --gd-text: #202124;
+    --gd-text-secondary: #5f6368;
+    --gd-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
+    --gd-shadow-hover: 0 1px 3px 0 rgba(60,64,67,.3), 0 4px 8px 3px rgba(60,64,67,.15);
+}
+
+body {
+    font-family: 'Google Sans', 'Roboto', Arial, sans-serif;
+    background-color: #fff;
+    color: var(--gd-text);
+}
+
+.container {
+    max-width: 1400px;
+    padding: 24px;
+}
+
+h1 {
+    font-size: 32px;
+    font-weight: 400;
+    color: var(--gd-text);
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--gd-border);
+}
+
+/* Upload Card */
+.card {
+    border: 1px solid var(--gd-border);
+    border-radius: 8px;
+    box-shadow: none;
+    margin-bottom: 20px;
+    transition: box-shadow 0.2s ease;
+}
+
+    .card:hover {
+        box-shadow: var(--gd-shadow);
+    }
+
+.card-header {
+    background-color: #fff;
+    border-bottom: 1px solid var(--gd-border);
+    padding: 16px 24px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--gd-text);
+}
+
+    .card-header h3 {
+        font-size: 16px;
+        font-weight: 500;
+        margin: 0;
+        color: var(--gd-text);
+    }
+
+.card-body {
+    padding: 24px;
+}
+
+/* Upload Form */
+.form-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--gd-text);
+    margin-bottom: 8px;
+}
+
+.form-control {
+    border: 1px solid var(--gd-border);
+    border-radius: 4px;
+    padding: 10px 12px;
+    font-size: 14px;
+    transition: border-color 0.2s ease;
+}
+
+    .form-control:focus {
+        border-color: var(--gd-blue);
+        box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
+        outline: none;
+    }
+
+/* Buttons */
+.btn-primary {
+    background-color: var(--gd-blue);
+    border: none;
+    border-radius: 4px;
+    padding: 10px 24px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+    .btn-primary:hover {
+        background-color: var(--gd-blue-hover);
+        box-shadow: var(--gd-shadow);
+    }
+
+.btn-sm {
+    padding: 6px 16px;
+    font-size: 13px;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+.btn-success {
+    background-color: var(--gd-blue);
+    border: none;
+}
+
+    .btn-success:hover {
+        background-color: var(--gd-blue-hover);
+    }
+
+/* Table Styling */
+.table {
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+    .table thead th {
+        background-color: var(--gd-bg);
+        color: var(--gd-text-secondary);
+        font-size: 12px;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--gd-border);
+        border-top: none;
+    }
+
+    .table tbody tr {
+        transition: background-color 0.15s ease;
+        border-bottom: 1px solid var(--gd-border);
+    }
+
+        .table tbody tr:hover {
+            background-color: var(--gd-bg);
+        }
+
+    .table tbody td {
+        padding: 16px;
+        font-size: 14px;
+        color: var(--gd-text);
+        vertical-align: middle;
+        border-top: none;
+    }
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: transparent;
+}
+
+/* Empty State */
+.text-muted {
+    color: var(--gd-text-secondary);
+    font-size: 14px;
+    text-align: center;
+    padding: 40px 0;
+}
+
+/* Validation */
+.text-danger {
+    color: #d93025;
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .container {
+        padding: 16px;
+    }
+
+    h1 {
+        font-size: 24px;
+    }
+
+    .card-body {
+        padding: 16px;
+    }
+
+    .table {
+        font-size: 13px;
+    }
+}
+
+/* --- appended grid styles for file view toggle --- */
+
+.view-hidden {
+    display: none !important;
+}
+
+/* Grid container */
+.files-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+}
+
+/* Individual file card in grid */
+.file-card {
+    border: 1px solid var(--gd-border);
+    border-radius: 8px;
+    padding: 12px;
+    background-color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: box-shadow 0.15s ease, transform 0.08s ease;
+}
+
+.file-card:hover {
+    box-shadow: var(--gd-shadow-hover);
+    transform: translateY(-2px);
+}
+
+.file-card-body {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.file-icon {
+    font-size: 28px;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    background: linear-gradient(180deg, rgba(26,115,232,0.08), rgba(26,115,232,0.03));
+    color: var(--gd-blue);
+}
+
+.file-meta {
+    overflow: hidden;
+}
+
+.file-name {
+    font-weight: 500;
+    font-size: 14px;
+    color: var(--gd-text);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.file-info {
+    font-size: 12px;
+    color: var(--gd-text-secondary);
+    margin-top: 4px;
+}
+
+/* Actions area in card */
+.file-card-actions {
+    margin-top: 12px;
+    display: flex;
+    justify-content: flex-start;
+    gap: 8px;
+}
+
+/* Make sure table keeps a clean layout on small screens while grid remains responsive */
+@media (max-width: 576px) {
+    .files-grid {
+        grid-template-columns: 1fr;
+    }
+}

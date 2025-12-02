@@ -12,7 +12,11 @@ namespace FileHostingTest
             // Add services to the container.
             builder.Services.AddRazorPages();
             builder.Services.Configure<MinioSettings>(builder.Configuration.GetSection("MinioSettings"));
-            builder.Services.AddSingleton<IFileStorageService, MinioFileStorageService>();
+
+            // Register repository and service
+            builder.Services.AddSingleton<MinioFileStorageRepository>();
+            builder.Services.AddSingleton<IFileStorageService, FileStorageService>();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

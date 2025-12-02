@@ -1,10 +1,126 @@
 ﻿@page
-@model IndexModel
+@model FileStorageTestModel
 @{
-    ViewData["Title"] = "Home page";
+    ViewData["Title"] = "MinIO File Storage Test";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<link rel="stylesheet" href="~/css/google.css" asp-append-version="true" />
+<link rel="stylesheet" href="~/css/file-view.css" asp-append-version="true" />
+
+<div class="container mt-4">
+    <h1>MinIO File Storage Test</h1>
+
+    <div class="card">
+        <div class="card-header d-flex align-items-center justify-content-between">
+            <div>
+                <h3 class="mb-0">Files</h3>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item"><a asp-page="/Index">Root</a></li>
+                        @if (!string.IsNullOrEmpty(Model.Path))
+                        {
+                            var parts = Model.Path.Trim('/').Split('/');
+                            var prefix = string.Empty;
+                            foreach (var p in parts)
+                            {
+                                prefix = string.IsNullOrEmpty(prefix) ? p + "/" : prefix + p + "/";
+                                <li class="breadcrumb-item"><a asp-page="/Index" asp-route-path="@prefix">@p</a></li>
+                            }
+                        }
+                    </ol>
+                </nav>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#uploadModal">
+                    Upload
+                </button>
+
+                <div class="btn-group" role="group" aria-label="View toggle">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" id="view-list" data-view="list" aria-pressed="true" title="List view">▤</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" id="view-grid" data-view="grid" aria-pressed="false" title="Grid view">▦</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body">
+            <div class="mb-3 d-flex align-items-center gap-2">
+                <form method="post" asp-page-handler="CreateFolder" class="d-inline" id="createFolderForm">
+                    <div class="input-group input-group-sm" style="max-width:320px;">
+                        <input type="text" name="newFolderName" class="form-control form-control-sm" placeholder="New folder name" />
+                        <button class="btn btn-outline-secondary" type="submit">Create</button>
+                    </div>
+                    <input type="hidden" name="path" value="@Model.Path" />
+                </form>
+            </div>
+
+            @if ((Model.Folders != null && Model.Folders.Any()) || (Model.Files != null && Model.Files.Any()))
+            {
+                <div class="files-area view-list" id="filesArea">
+                    @* Render folders first *@
+                    @if (Model.Folders != null && Model.Folders.Any())
+                    {
+                        @foreach (var folder in Model.Folders)
+                        {
+                            var display = folder.Trim('/').Split('/').Last();
+                            <div class="file-item folder-item" data-folder="@folder">
+                                <div class="file-left">
+                                    <div class="file-icon">📁</div>
+                                    <div class="file-main">
+                                        <div class="file-name"><a asp-page="/Index" asp-route-path="@folder">@display</a></div>
+                                        <div class="file-reason">Folder • </div>
+                                    </div>
+                                </div>
+                                <div class="file-right">
+                                    <div class="file-owner">M</div>
+                                    <div class="file-actions">
+                                        <button class="btn btn-sm btn-link" data-share-object="@folder">Share</button>
+                                        <button class="btn btn-sm btn-link text-danger" data-delete-folder="@folder">Delete</button>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+
+                    @* Render files *@
+                    @if (Model.Files != null && Model.Files.Any())
+                    {
+                        @foreach (var file in Model.Files)
+                        {
+                            <div class="file-item">
+                                <div class="file-left">
+                                    <div class="file-icon">📄</div>
+                                    <div class="file-main">
+                                        <div class="file-name">@file.Name</div>
+                                        <div class="file-reason">You opened • @file.LastModified.ToString("d MMM yyyy")</div>
+                                    </div>
+                                </div>
+                                <div class="file-right">
+                                    <div class="file-owner">M</div>
+                                    <div class="file-actions">
+                                        <a asp-page-handler="Download" asp-route-fileName="@file.Name" class="btn btn-sm btn-link">Download</a>
+                                        <button class="btn btn-sm btn-link" data-share-object="@file.Name">Share</button>
+                                        <button class="btn btn-sm btn-link text-danger" data-delete-object="@file.Name">Delete</button>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            }
+            else
+            {
+                <p class="text-muted">No files uploaded yet.</p>
+            }
+        </div>
+    </div>
 </div>
+
+@* Render upload modal partial *@
+<partial name="_UploadModal" model="Model" />
+
+@* Share modal partial (render empty placeholder, JS will populate) *@
+<partial name="_ShareModal" model="Model" />
+
+@section Scripts {
+    <script src="~/js/fileViewToggle.js" asp-append-version="true"></script>
+}

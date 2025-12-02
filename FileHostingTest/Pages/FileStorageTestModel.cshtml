@@ -4,6 +4,8 @@
     ViewData["Title"] = "MinIO File Storage Test";
 }
 
+<link rel="stylesheet" href="~/css/google.css" asp-append-version="true" />
+
 <div class="container mt-4">
     <h1>MinIO File Storage Test</h1>
 
@@ -14,45 +16,73 @@
         <div class="card-body">
             <form method="post" enctype="multipart/form-data" asp-page-handler="Upload">
                 <div class="mb-3">
-                    <label for="Upload" class="form-label">Select File</label>
-                    <input type="file" class="form-control" asp-for="Upload" />
+                    <label asp-for="Upload" class="form-label">Select File</label>
+                    <input type="file" class="form-control" asp-for="Upload" id="Upload" />
                     <span asp-validation-for="Upload" class="text-danger"></span>
                 </div>
-                <button type="submit" class="btn btn-primary">Upload</button>
+                <div>
+                    <button type="submit" class="btn btn-primary">Upload</button>
+                </div>
             </form>
         </div>
     </div>
 
     <div class="card">
-        <div class="card-header">
-            <h3>Stored Files</h3>
+        <div class="card-header d-flex align-items-center justify-content-between">
+            <h3 class="mb-0">Stored Files</h3>
+            <div class="btn-group" role="group" aria-label="View toggle">
+                <button type="button" class="btn btn-sm btn-outline-secondary" id="view-list" data-view="list" aria-pressed="true">List</button>
+                <button type="button" class="btn btn-sm btn-outline-secondary" id="view-grid" data-view="grid" aria-pressed="false">Grid</button>
+            </div>
         </div>
         <div class="card-body">
-            @if (Model.Files.Any())
+            @if (Model.Files != null && Model.Files.Any())
             {
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>File Name</th>
-                            <th>Size</th>
-                            <th>Last Modified</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var file in Model.Files)
-                        {
+                <!-- List view (table) -->
+                <div id="files-list">
+                    <table class="table table-striped">
+                        <thead>
                             <tr>
-                                <td>@file.Name</td>
-                                <td>@FormatFileSize(file.Size)</td>
-                                <td>@file.LastModified.ToString("yyyy-MM-dd HH:mm")</td>
-                                <td>
-                                    <a asp-page-handler="Download" asp-route-fileName="@file.Name" class="btn btn-sm btn-success">Download</a>
-                                </td>
+                                <th>File Name</th>
+                                <th>Size</th>
+                                <th>Last Modified</th>
+                                <th>Actions</th>
                             </tr>
-                        }
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @foreach (var file in Model.Files)
+                            {
+                                <tr>
+                                    <td>@file.Name</td>
+                                    <td>@FormatFileSize(file.Size)</td>
+                                    <td>@file.LastModified.ToString("yyyy-MM-dd HH:mm")</td>
+                                    <td>
+                                        <a asp-page-handler="Download" asp-route-fileName="@file.Name" class="btn btn-sm btn-success">Download</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Grid view (cards) -->
+                <div id="files-grid" class="files-grid view-hidden" aria-hidden="true">
+                    @foreach (var file in Model.Files)
+                    {
+                        <div class="file-card">
+                            <div class="file-card-body">
+                                <div class="file-icon">📄</div>
+                                <div class="file-meta">
+                                    <div class="file-name" title="@file.Name">@file.Name</div>
+                                    <div class="file-info">@FormatFileSize(file.Size) • @file.LastModified.ToString("yyyy-MM-dd")</div>
+                                </div>
+                            </div>
+                            <div class="file-card-actions">
+                                <a asp-page-handler="Download" asp-route-fileName="@file.Name" class="btn btn-sm btn-success">Download</a>
+                            </div>
+                        </div>
+                    }
+                </div>
             }
             else
             {
@@ -62,6 +92,52 @@
     </div>
 </div>
 
+@section Scripts {
+<script>
+    (function () {
+        const listBtn = document.getElementById('view-list');
+        const gridBtn = document.getElementById('view-grid');
+        const listEl = document.getElementById('files-list');
+        const gridEl = document.getElementById('files-grid');
+        const STORAGE_KEY = 'fileViewMode';
+
+        function setMode(mode, persist = true) {
+            if (mode === 'grid') {
+                listEl.classList.add('view-hidden');
+                gridEl.classList.remove('view-hidden');
+                listBtn.setAttribute('aria-pressed', 'false');
+                gridBtn.setAttribute('aria-pressed', 'true');
+                gridBtn.classList.add('active');
+                listBtn.classList.remove('active');
+            } else {
+                // default to list
+                listEl.classList.remove('view-hidden');
+                gridEl.classList.add('view-hidden');
+                listBtn.setAttribute('aria-pressed', 'true');
+                gridBtn.setAttribute('aria-pressed', 'false');
+                listBtn.classList.add('active');
+                gridBtn.classList.remove('active');
+            }
+
+            if (persist) {
+                try {
+                    localStorage.setItem(STORAGE_KEY, mode);
+                } catch (e) { /* ignore storage errors */ }
+            }
+        }
+
+        listBtn.addEventListener('click', () => setMode('list'));
+        gridBtn.addEventListener('click', () => setMode('grid'));
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const saved = (function () {
+                try { return localStorage.getItem(STORAGE_KEY); } catch (e) { return null; }
+            })();
+            setMode(saved === 'grid' ? 'grid' : 'list', false);
+        });
+    })();
+</script>
+}
 @functions {
     private string FormatFileSize(long bytes)
     {
